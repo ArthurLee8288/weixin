@@ -14,7 +14,7 @@
 import config
 from flask import Flask, request, make_response
 import hashlib
-import xmltodict
+# import xmltodict
 import time
 
 app = Flask(__name__)
