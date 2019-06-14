@@ -23,7 +23,7 @@ app.config.from_object(config)
 WECHAT_TOKEN = "logitech"
 
 
-@app.route('/weixin', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def wechat():
     args = request.args
 
