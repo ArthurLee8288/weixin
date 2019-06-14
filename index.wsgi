@@ -1,4 +1,4 @@
-import sae
+﻿import sae
 sae.add_vendor_dir('vendor')
 from weixin import app
 
