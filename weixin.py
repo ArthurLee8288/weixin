@@ -1,37 +1,55 @@
-#encoding:utf-8
+# #encoding:utf-8
+#
+#
+# from flask import Flask,url_for,redirect,render_template,request
+# import hashlib
+# import config
+#
+# app = Flask(__name__)
 
 
-from flask import Flask,url_for,redirect,render_template
-import hashlib
+
+# -*- coding:utf-8 -*-
+
 import config
+from flask import Flask, request, make_response
+import hashlib
+import xmltodict
+import time
 
 app = Flask(__name__)
 app.config.from_object(config)
 
+WECHAT_TOKEN = "logitech"
 
-@app.route("/weixin/",methods = ["GET", "POST"])
-def index():
-    if request.method == "GET":  # 判断请求方式是GET请求
-        my_signature = request.args.get('signature')  # 获取携带的signature参数
-        my_timestamp = request.args.get('timestamp')  # 获取携带的timestamp参数
-        my_nonce = request.args.get('nonce')  # 获取携带的nonce参数
-        my_echostr = request.args.get('echostr')  # 获取携带的echostr参数
 
-        token = 'logitech'  # 一定要跟刚刚填写的token一致
+@app.route('/weixin', methods=['GET', 'POST'])
+def wechat():
+    args = request.args
+    print args
 
-        # 进行字典排序
-        data = [token, my_timestamp, my_nonce]
-        data.sort()
+    signature = args.get('signature')
+    timestamp = args.get('timestamp')
+    nonce = args.get('nonce')
+    echostr = args.get('echostr')
 
-        # 拼接成字符串
-        temp = ''.join(data)
+    # 1. 将token、timestamp、nonce三个参数进行字典序排序
+    temp = [WECHAT_TOKEN, timestamp, nonce]
+    temp.sort()
+    # 2. 将三个参数字符串拼接成一个字符串进行sha1加密
+    temp = "".join(temp)
+    # sig是我们计算出来的签名结果
+    sig = hashlib.sha1(temp).hexdigest()
 
-        # 进行sha1加密
-        mysignature = hashlib.sha1(temp).hexdigest()
+    # 3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
+    if sig == signature:
+        # 根据请求方式.返回不同的内容 ,如果是get方式,代表是验证服务器有效性
+        # 如果POST方式,代表是微服务器转发给我们的消息
+        if request.method == "GET":
+            return echostr
 
-        # 加密后的字符串可与signature对比，标识该请求来源于微信
-        if my_signature == mysignature:
-            return my_echostr
+    else:
+        return 'errno', 403
 
 
 if __name__ == '__main__':
