@@ -31,7 +31,8 @@ def index():
 
         # 加密后的字符串可与signature对比，标识该请求来源于微信
         if my_signature == mysignature:
-            return echostr
+            return my_echostr
+
 
 if __name__ == '__main__':
     app.run()
