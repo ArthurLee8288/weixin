@@ -26,18 +26,20 @@ WECHAT_TOKEN = "logitech"
 @app.route('/weixin', methods=['GET', 'POST'])
 def wechat():
     args = request.args
-    print args
+
 
     signature = args.get('signature')
     timestamp = args.get('timestamp')
     nonce = args.get('nonce')
     echostr = args.get('echostr')
-
+    print timestamp
     # 1. 将token、timestamp、nonce三个参数进行字典序排序
     temp = [WECHAT_TOKEN, timestamp, nonce]
+
     temp.sort()
+
     # 2. 将三个参数字符串拼接成一个字符串进行sha1加密
-    temp = "".join(temp)
+    temp = "".join([str(x) for x in temp])
     # sig是我们计算出来的签名结果
     sig = hashlib.sha1(temp).hexdigest()
 
